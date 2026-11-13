@@ -63,31 +63,6 @@ When a change is detected, the Telegram bot sends a notification containing the 
 
 ![Telegram Notification](screenshots/telegram-notification.png)
 
-## Project Structure
-
-dou-inbox-monitor/
-│
-├── apify-actor/
-│   ├── src/
-│   │   ├── main.js
-│   │   └── routes.js
-│   │
-│   ├── .actor/
-│   │   └── input_schema.json
-│   │
-│   ├── package.json
-│   └── Dockerfile
-│
-├── n8n/
-│   └── workflow.json
-│
-├── screenshots/
-│   ├── apify-actor.png
-│   ├── n8n-workflow.png
-│   └── telegram-notification.png
-│
-└── README.md
-
 ## How It Works
 
 ### 1. Apify Actor — Data Collection
