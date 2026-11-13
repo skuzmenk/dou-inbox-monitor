@@ -1,0 +1,26 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "DOU Inbox Monitor",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "URL сторінки DOU Inbox",
+            "editor": "requestListSources",
+            "prefill": [
+                {
+                    "url": "https://dou.ua/"
+                }
+            ]
+        },
+        "cookies": {
+            "title": "DOU Cookies",
+            "type": "string",
+            "description": "Авторизована сесія DOU",
+            "editor": "textarea",
+            "isSecret": true
+        }
+    }
+}

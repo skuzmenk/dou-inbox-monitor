@@ -1,0 +1,120 @@
+{
+  "name": "Job Hunter AI",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dou-inbox",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        -32
+      ],
+      "id": "c90d85ad-c5c8-4aa1-9542-c28609c4fd93",
+      "name": "Webhook",
+      "webhookId": "b38681c9-34e4-41af-843c-0999e5e46b32"
+    },
+    {
+      "parameters": {
+        "chatId": "Your chat id",
+        "text": "=🔔 Нове повідомлення!  🌐 Сторінка: https://dou.ua/inbox  📝 Текст повідомлення: \n{{ $json.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        -32
+      ],
+      "id": "43e0c059-6850-4c38-af3f-a863702ce606",
+      "name": "Send a text message",
+      "webhookId": "66757ac7-d815-4afd-9f45-db460226ec66",
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nconst items = $input.all();\n\nif (!items.length) {\n    return [];\n}\n\nconst data = items[0].json;\nconst payload = data.body ?? data;\n\nconst currentText = payload.message ?? '';\n\nif (!currentText) {\n    throw new Error('pageText не знайдено');\n}\n\n// Перевіряємо, чи змінився Inbox\nif (staticData.lastInboxText === currentText) {\n    console.log('Inbox не змінився. Повідомлення не надсилаємо.');\n    return [];\n}\n\n// Зберігаємо новий стан\nstaticData.lastInboxText = currentText;\n\nconsole.log('Inbox змінився. Надсилаємо сповіщення.');\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        -32
+      ],
+      "id": "0d36a94a-3186-429b-a6ee-b105f7c0a371",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n    const data = item.json.body ?? item.json;\n    const text = data.pageText ?? '';\n\n    // Відокремлюємо історію повідомлень\n    const messagesStart = text.indexOf('Messages');\n\n    if (messagesStart === -1) {\n        return {\n            json: {\n                message: 'Повідомлення не знайдено'\n            }\n        };\n    }\n\n    const messagesText = text.slice(messagesStart);\n\n    // Видаляємо системні елементи інтерфейсу\n    const lines = messagesText\n        .split('\\n')\n        .map(line => line.trim())\n        .filter(Boolean)\n        .filter(line =>\n            !['Messages', 'Send'].includes(line) &&\n            !line.includes('message deleted')\n        );\n\n    return {\n        json: {\n            message: lines.slice(0, 3).join('\\n')\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -32
+      ],
+      "id": "dfded4b2-b639-44c9-bb07-7fcb46c1b701",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b7e0774d-55db-4ab0-9fe5-6c50c49de239",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "717bbda18cb4570209bbebbc4cf1942a39bea0d51024402d479be2202e076671"
+  },
+  "id": "ks6B3BzBfFyqKMbV",
+  "tags": []
+}
